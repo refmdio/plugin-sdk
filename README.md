@@ -1,7 +1,7 @@
 @refmdio/plugin-sdk
 ==================
 
-Minimal, framework-agnostic SDK for building RefMD plugins (ESM).
+Minimal, framework-agnostic SDK for building RefMD plugins.
 
 Status
 ------
@@ -43,20 +43,6 @@ export default async function mount(container: Element, host: any) {
 }
 ```
 
-Use without npm (host-provided ESM)
------------------------------------
-
-Your RefMD host can serve the SDK at a fixed path:
-
-```
-/plugins/sdk/refmd-sdk/0.1.0/index.mjs
-```
-
-Import it directly from your plugin ESM:
-
-```js
-import { createKit } from '/plugins/sdk/refmd-sdk/0.1.0/index.mjs'
-```
 
 API (v0.1)
 ----------
@@ -80,4 +66,3 @@ Release workflow (suggested)
 ----------------------------
 
 - Tag `v0.1.x` → GitHub Actions builds and publishes to npm.
-- Attach the built `index.mjs` to the GitHub Release for hosts to mirror under `/plugins/sdk/refmd-sdk/<version>/index.mjs`.
