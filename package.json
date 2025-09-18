@@ -1,5 +1,5 @@
 {
-  "name": "@refmd/plugin-sdk",
+  "name": "@refmdio/plugin-sdk",
   "version": "0.1.0",
   "type": "module",
   "description": "Minimal, framework-agnostic SDK for building RefMD plugins (ESM)",
@@ -42,4 +42,3 @@
     "rimraf": "^5.0.0"
   }
 }
-

@@ -1,4 +1,4 @@
-@refmd/plugin-sdk
+@refmdio/plugin-sdk
 ==================
 
 Minimal, framework-agnostic SDK for building RefMD plugins (ESM).
@@ -13,13 +13,13 @@ Install (npm)
 -------------
 
 ```
-npm i @refmd/plugin-sdk
+npm i @refmdio/plugin-sdk
 ```
 
 Then in your plugin code:
 
 ```ts
-import { createKit, resolveDocId } from '@refmd/plugin-sdk'
+import { createKit, resolveDocId } from '@refmdio/plugin-sdk'
 
 export default async function mount(container: Element, host: any) {
   const kit = createKit(host)
@@ -81,4 +81,3 @@ Release workflow (suggested)
 
 - Tag `v0.1.x` → GitHub Actions builds and publishes to npm.
 - Attach the built `index.mjs` to the GitHub Release for hosts to mirror under `/plugins/sdk/refmd-sdk/<version>/index.mjs`.
-
