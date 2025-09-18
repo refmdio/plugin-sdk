@@ -2,38 +2,8 @@
 // Minimal, framework-agnostic helpers for building RefMD plugins.
 
 // ——— Types ———
-export type ExecResult = {
-  ok: boolean
-  data?: any
-  effects?: any[]
-  error?: any
-}
-
-export type Host = {
-  exec: (action: string, payload?: any) => Promise<ExecResult>
-  origin: string
-  toast?: (level: string, message: string) => void
-  api: {
-    renderMarkdown: (text: string, options?: any) => Promise<{ html: string }>
-    renderMarkdownMany?: (items: Array<{ text: string; options: any }>) => Promise<any>
-    listRecords?: (pluginId: string, docId: string, kind: string, token?: string) => Promise<any>
-    createRecord?: (pluginId: string, docId: string, kind: string, data: any, token?: string) => Promise<any>
-    patchRecord?: (pluginId: string, id: string, patch: any) => Promise<any>
-    deleteRecord?: (pluginId: string, id: string) => Promise<any>
-    getKv?: (pluginId: string, docId: string, key: string, token?: string) => Promise<any>
-    putKv?: (pluginId: string, docId: string, key: string, value: any, token?: string) => Promise<any>
-    uploadFile?: (docId: string, file: File) => Promise<any>
-  }
-  ui: {
-    hydrateAll?: (root: Element) => Promise<void> | void
-  }
-  context?: {
-    docId?: string | null
-    route?: string | null
-    token?: string | null
-    mode?: 'primary' | 'secondary'
-  }
-}
+import type { Host } from './types'
+export type { Host, ExecResult, HostMode, Listener } from './types'
 
 // ——— DOM primitives ———
 export function h<K extends keyof HTMLElementTagNameMap>(
@@ -188,19 +158,10 @@ export function createKit(host: Host) {
 }
 
 // ——— Utilities ———
-export function resolveDocId(route?: string | null) {
-  try {
-    const src = route || (typeof location !== 'undefined' ? (location.pathname + location.search + location.hash) : '')
-    const u = new URL(src, typeof location !== 'undefined' ? location.origin : 'http://localhost')
-    const m = u.pathname.match(/([0-9a-fA-F-]{36})(?:$|[?/])/)
-    if (m && m[1]) return m[1]
-    const seg = u.pathname.split('/').filter(Boolean)
-    if (seg.length > 0) return seg[seg.length - 1]
-  } catch {}
-  return ''
-}
-
-export function escapeHtml(value: any) {
-  return String(value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' } as any)[char])
-}
-
+export { resolveDocId } from './utils/route'
+export { escapeHtml } from './utils/html'
+export { createHostContext, normalizeExec } from './core/host'
+export type { PluginHostContext } from './core/host'
+export { createRecordStore } from './services/records'
+export { createMarkdownRenderer, createMarkdownEditor } from './services/markdown'
+export { createUploader } from './services/uploads'
