@@ -1,6 +1,6 @@
 {
   "name": "@refmdio/plugin-sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "Minimal, framework-agnostic SDK for building RefMD plugins (ESM)",
   "main": "dist/index.cjs",
