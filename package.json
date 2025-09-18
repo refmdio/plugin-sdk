@@ -1,15 +1,15 @@
 {
   "name": "@refmdio/plugin-sdk",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "type": "module",
   "description": "Minimal, framework-agnostic SDK for building RefMD plugins (ESM)",
   "main": "dist/index.cjs",
-  "module": "dist/index.mjs",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
+      "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     }
   },
