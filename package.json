@@ -1,0 +1,45 @@
+{
+  "name": "@refmd/plugin-sdk",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Minimal, framework-agnostic SDK for building RefMD plugins (ESM)",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts --minify --sourcemap",
+    "dev": "tsup src/index.ts --format esm --watch",
+    "clean": "rimraf dist"
+  },
+  "keywords": ["refmd", "plugin", "sdk", "esm", "extism"],
+  "author": "RefMD Team",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/refmdio/plugin-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/refmdio/plugin-sdk/issues"
+  },
+  "homepage": "https://github.com/refmdio/plugin-sdk#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.1",
+    "typescript": "^5.4.0",
+    "rimraf": "^5.0.0"
+  }
+}
+
