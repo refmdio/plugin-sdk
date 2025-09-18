@@ -14,7 +14,7 @@ jobs:
         with:
           node-version: 20
           registry-url: 'https://registry.npmjs.org'
-      - run: npm ci
+      - run: npm install --no-audit --no-fund
       - run: npm run build
       - run: npm publish
         env:
@@ -25,4 +25,3 @@ jobs:
           files: |
             dist/index.mjs
             dist/index.d.ts
-
