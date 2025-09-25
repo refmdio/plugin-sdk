@@ -4,6 +4,7 @@ export type UploadResult = {
   url: string
   filename: string
   contentType?: string | null
+  absoluteUrl?: string | null
 }
 
 export type MarkdownSnippetFactory = (result: UploadResult) => string
@@ -15,6 +16,46 @@ export type UploaderOptions = {
 
 export function createUploader(options: UploaderOptions) {
   const { context, onStatus } = options
+
+  const toRelativeAttachmentUrl = (rawUrl: unknown, filename: string) => {
+    const fallback = `./attachments/${filename}`
+    if (typeof rawUrl !== 'string' || rawUrl.length === 0) return fallback
+    if (
+      rawUrl.startsWith('./') ||
+      rawUrl.startsWith('../') ||
+      rawUrl.startsWith('attachments/') ||
+      rawUrl.startsWith('/attachments/')
+    ) {
+      return rawUrl.startsWith('/') ? `.${rawUrl}` : rawUrl
+    }
+
+    const hostOrigin = context.host.origin || undefined
+    const resolvePathname = (href: string) => {
+      if (href.startsWith('/')) return href
+      try {
+        return new URL(href).pathname
+      } catch {}
+      const base = hostOrigin || (typeof window !== 'undefined' ? window.location.origin : undefined)
+      if (!base) return href
+      try {
+        return new URL(href, base).pathname
+      } catch {
+        return href
+      }
+    }
+
+    const pathname = resolvePathname(rawUrl)
+    if (pathname.startsWith('./') || pathname.startsWith('../')) return pathname
+    if (pathname.startsWith('attachments/')) return `./${pathname}`
+
+    const attachmentsIndex = pathname.indexOf('/attachments/')
+    if (attachmentsIndex !== -1) {
+      const suffix = pathname.slice(attachmentsIndex)
+      return suffix.startsWith('/attachments/') ? `.${suffix}` : `./${suffix}`
+    }
+
+    return fallback
+  }
 
   const setStatus = (status: 'idle' | 'uploading' | 'success' | 'error') => {
     try {
@@ -43,11 +84,13 @@ export function createUploader(options: UploaderOptions) {
       try {
         const response = await context.host.api.uploadFile(docId, file)
         const filename = response?.filename ?? file.name
-        const url = response?.url ?? `./attachments/${filename}`
+        const absoluteUrl = typeof response?.url === 'string' ? response.url : null
+        const url = toRelativeAttachmentUrl(absoluteUrl, filename)
         results.push({
           url,
           filename,
           contentType: response?.content_type ?? file.type ?? null,
+          absoluteUrl,
         })
       } catch (err) {
         console.error('[plugin-sdk] upload failed', err)
