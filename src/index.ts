@@ -3,7 +3,7 @@
 
 // ——— Types ———
 import type { Host } from './types'
-export type { Host, ExecResult, HostMode, Listener } from './types'
+export type { Host, ExecResult, HostMode, Listener, HostChrome, HostChromeAction } from './types'
 
 // ——— DOM primitives ———
 export function h<K extends keyof HTMLElementTagNameMap>(
@@ -132,6 +132,23 @@ export const tokens = {
   radius: { sm: '0.25rem', md: '0.375rem', lg: '0.5rem' },
 }
 
+export type ShellAction = {
+  id?: string
+  label: string
+  onClick?: (event: MouseEvent) => void
+  disabled?: boolean
+  variant?: 'default' | 'primary' | 'ghost'
+}
+
+export type ShellApi = {
+  setTitle: (title?: string | null) => void
+  setStatus: (status?: string | null) => void
+  setDocBadge: (value?: string | null) => void
+  setActions: (actions: ShellAction[]) => void
+  primaryAction: (action: ShellAction) => void
+  reset: () => void
+}
+
 // ——— Markdown helper ———
 export async function renderMarkdown(host: Host, { text, options, target }: { text: string; options?: any; target?: Element }) {
   const html = await host.api.renderMarkdown(String(text || ''), options || {})
@@ -146,10 +163,55 @@ export async function renderMarkdown(host: Host, { text, options, target }: { te
 
 // ——— Host-aware kit ———
 export function createKit(host: Host) {
+  const chrome = host?.chrome
+
+  const normalizeActions = (actions: ShellAction[]) => {
+    if (!Array.isArray(actions)) return []
+    return actions
+      .filter((action) => action && typeof action.label === 'string')
+      .map((action) => ({
+        id: action.id,
+        label: action.label,
+        disabled: Boolean(action.disabled),
+        variant: action.variant ?? 'default',
+        onClick: action.onClick,
+      }))
+  }
+
+  const shell: ShellApi = {
+    setTitle: (title?: string | null) => {
+      try { chrome?.setTitle?.(title ?? '') } catch {}
+    },
+    setStatus: (status?: string | null) => {
+      try { chrome?.setStatus?.(status ?? '') } catch {}
+    },
+    setDocBadge: (value?: string | null) => {
+      try { chrome?.setDocBadge?.(value ?? '') } catch {}
+    },
+    setActions: (actions: ShellAction[]) => {
+      try { chrome?.setActions?.(normalizeActions(actions)) } catch {}
+    },
+    primaryAction: (action: ShellAction) => {
+      if (!action) {
+        shell.setActions([])
+        return
+      }
+      const normalized: ShellAction = {
+        ...action,
+        variant: action.variant ?? 'primary',
+      }
+      shell.setActions([normalized])
+    },
+    reset: () => {
+      try { chrome?.reset?.() } catch {}
+    },
+  }
+
   return {
     h, fragment, render, store,
     button, card, input, textarea,
     tokens,
+    shell,
     toast: (level: string, message: string) => {
       try { host?.toast?.(level, message) } catch { /* no-op */ }
     },
