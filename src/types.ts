@@ -7,20 +7,12 @@ export type ExecResult = {
   error?: any
 }
 
-export type HostChromeAction = {
+export type HostDocumentAction = {
   id?: string
   label: string
-  onClick?: (event: MouseEvent) => void
+  onSelect?: () => void
   disabled?: boolean
-  variant?: 'default' | 'primary' | 'ghost'
-}
-
-export type HostChrome = {
-  setTitle?: (title?: string | null) => void
-  setStatus?: (status?: string | null) => void
-  setDocBadge?: (value?: string | null) => void
-  setActions?: (actions: HostChromeAction[]) => void
-  reset?: () => void
+  variant?: 'default' | 'primary' | 'outline'
 }
 
 export type Host = {
@@ -41,6 +33,10 @@ export type Host = {
   }
   ui: {
     hydrateAll?: (root: Element) => Promise<void> | void
+    setDocumentTitle?: (title?: string | null) => void
+    setDocumentStatus?: (status?: string | null) => void
+    setDocumentBadge?: (value?: string | null) => void
+    setDocumentActions?: (actions: HostDocumentAction[]) => void
   }
   context?: {
     docId?: string | null
@@ -48,7 +44,6 @@ export type Host = {
     token?: string | null
     mode?: HostMode
   }
-  chrome?: HostChrome
 }
 
 export type Listener<T> = (value: T) => void
