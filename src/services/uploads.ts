@@ -73,23 +73,29 @@ export function createUploader(options: UploaderOptions) {
 
   const uploadFiles = async (files: FileList | File[], toMarkdown: MarkdownSnippetFactory) => {
     const docId = ensureDoc()
-    if (typeof context.host.api.uploadFile !== 'function') {
-      throw new Error('host.api.uploadFile not available')
-    }
     const list = Array.isArray(files) ? files : Array.from(files)
     if (!list.length) return [] as UploadResult[]
     setStatus('uploading')
     const results: UploadResult[] = []
     for (const file of list) {
       try {
-        const response = await context.host.api.uploadFile(docId, file)
-        const filename = response?.filename ?? file.name
-        const absoluteUrl = typeof response?.url === 'string' ? response.url : null
+        const response = await context.execAction('host.files.upload', {
+          docId,
+          file,
+        })
+        if (response?.ok === false) {
+          const message =
+            (response.error && (response.error as any).message) || (response.error as any)?.code || 'upload failed'
+          throw new Error(message)
+        }
+        const payload = response?.data as any
+        const filename = payload?.filename ?? file.name
+        const absoluteUrl = typeof payload?.url === 'string' ? payload.url : null
         const url = toRelativeAttachmentUrl(absoluteUrl, filename)
         results.push({
           url,
           filename,
-          contentType: response?.content_type ?? file.type ?? null,
+          contentType: payload?.content_type ?? file.type ?? null,
           absoluteUrl,
         })
       } catch (err) {

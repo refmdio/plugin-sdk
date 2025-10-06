@@ -66,12 +66,19 @@ export function createRecordStore<TData = any>(options: RecordStoreOptions<TData
 
   const list = async () => {
     const docId = ensureDoc()
-    if (typeof context.host.api.listRecords !== 'function') {
-      throw new Error('host.api.listRecords not available')
-    }
     const token = getToken() ?? undefined
-    const result = await context.host.api.listRecords(context.pluginId, docId, kind, token)
-    const itemsOut = Array.isArray(result?.items) ? result.items : []
+    const response = await context.execAction('host.records.list', {
+      docId,
+      kind,
+      token,
+    })
+    if (response?.ok === false) {
+      const message =
+        (response.error && (response.error as any).message) || (response.error as any)?.code || 'records.list failed'
+      throw new Error(message)
+    }
+    const payload = response?.data as any
+    const itemsOut = Array.isArray(payload?.items) ? payload.items : []
     items = itemsOut as RecordItem<TData>[]
     notify()
     return items
