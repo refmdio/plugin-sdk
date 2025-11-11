@@ -1,5 +1,38 @@
 export type HostMode = 'primary' | 'secondary'
 
+export type SplitEditorPreviewUpdate = {
+  content: string
+  viewMode: 'editor' | 'split' | 'preview'
+}
+
+export type SplitEditorPreviewDelegate = (ctx: {
+  container: Element
+  docId: string
+  token?: string | null
+  host: Host
+}) => {
+  update?: (payload: SplitEditorPreviewUpdate) => void
+  dispose?: () => void
+} | void
+
+export type SplitEditorDocumentApi = {
+  docId: string
+  token?: string | null
+  getContent: () => string
+  setContent: (value: string) => void
+}
+
+export type SplitEditorMountOptions = {
+  docId?: string | null
+  token?: string | null
+  preview?: {
+    delegate?: SplitEditorPreviewDelegate
+  }
+  document?: {
+    onReady?: (api: SplitEditorDocumentApi) => void | (() => void)
+  }
+}
+
 export type ExecResult = {
   ok: boolean
   data?: any
@@ -31,6 +64,7 @@ export type Host = {
     setDocumentStatus?: (status?: string | null) => void
     setDocumentBadge?: (value?: string | null) => void
     setDocumentActions?: (actions: HostDocumentAction[]) => void
+    mountSplitEditor?: (container: Element, options?: SplitEditorMountOptions) => void | (() => void)
   }
   context?: {
     docId?: string | null

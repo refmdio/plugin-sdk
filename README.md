@@ -50,6 +50,8 @@ API (v0.1)
 - Core: `h`, `fragment`, `render`, `store`
 - UI: `button`, `card`, `input`, `textarea`, `tokens`
 - Utils: `markdownPreview(host, { text, options, target })`, `resolveDocId`, `escapeHtml`
+- Host bridges: `createHostContext`, `normalizeExec`, `createRecordStore`, `createMarkdownRenderer`, `createMarkdownEditor`, `createUploader`
+- Split editor bridge (v0.1.9+): `host.ui.mountSplitEditor(container, { docId, token, preview: { delegate }, document: { onReady } })`
 
 WC are not intended to be used directly by plugin authors; `markdownPreview` calls the host hydration routines under the hood.
 
